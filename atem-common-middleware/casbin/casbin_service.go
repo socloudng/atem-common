@@ -1,7 +1,6 @@
 package casbin
 
 import (
-	"atem/atem-module/atem-system/models/request"
 	"errors"
 	"github/socloudng/atem-common/atem-common-base/base_service"
 	"sync"
@@ -21,7 +20,7 @@ func (casbinService *CasbinService) SetConfig(config *CasbinConfig) {
 	casbinService.option = config
 }
 
-func (casbinService *CasbinService) UpdateCasbin(authorityId string, casbinInfos []request.CasbinInfo) error {
+func (casbinService *CasbinService) UpdateCasbin(authorityId string, casbinInfos []CasbinInfo) error {
 	casbinService.ClearCasbin(0, authorityId)
 	rules := [][]string{}
 	for _, v := range casbinInfos {
@@ -53,7 +52,7 @@ func (casbinService *CasbinService) GetPolicyPathByAuthorityId(authorityId strin
 	e := casbinService.Casbin()
 	list := e.GetFilteredPolicy(0, authorityId)
 	for _, v := range list {
-		pathMaps = append(pathMaps, request.CasbinInfo{
+		pathMaps = append(pathMaps, CasbinInfo{
 			Path:   v[1],
 			Method: v[2],
 		})
