@@ -41,6 +41,18 @@ func GetDatabase(orm *gorm.DB, cfg *db.DbConfig) DynamicDatabase {
 			dbs["pgsql"] = NewDynamicDBPgsql(orm, cfg)
 		}
 		return dbs["pgsql"]
+	case "sqlserver":
+		fallthrough
+	case "mssql":
+		if dbs["mssql"] == nil {
+			dbs["mssql"] = NewDynamicDBSqlServer(orm, cfg)
+		}
+		return dbs["mssql"]
+	case "sqlite3":
+		if dbs["sqlite3"] == nil {
+			dbs["sqlite3"] = NewDynamicDBSqlite3(orm, cfg)
+		}
+		return dbs["sqlite3"]
 	default:
 		if dbs["mysql"] == nil {
 			dbs["mysql"] = NewDynamicDBMysql(orm)
