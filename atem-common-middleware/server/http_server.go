@@ -26,3 +26,18 @@ func NewHttpServer(servCfg *configs.ServerConfig, httpHandler http.Handler, logg
 	fmt.Println("Welcom to " + servCfg.ServerName)
 	logger.Error(serv.ListenAndServe().Error())
 }
+
+// EnableCrossDomain sets the `Access-Control-Allow-Methods` header and the
+// `Access-Control-Allow-Origin` header to the response to enable cross domain.
+//
+// TODO: We should restrict the origin, and may set in `config.toml`.
+func EnableCrossDomain(w http.ResponseWriter, r *http.Request) {
+	origin := r.Header.Get("Origin")
+	if origin == "" { // not cross origin
+		return
+	}
+
+	header := w.Header()
+	header.Set("Access-Control-Allow-Methods", "OPTIONS,POST,GET")
+	header.Set("Access-Control-Allow-Origin", origin)
+}

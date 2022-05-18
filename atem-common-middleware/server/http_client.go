@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -14,12 +15,11 @@ func Get(url string) (response []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("http status: %v %v", resp.StatusCode, resp.Status)
 	}
-	return body, nil
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
 }
 
 //application/json; charset=utf-8
@@ -39,9 +39,5 @@ func Post(url string, data interface{}, contentType string) (content []byte, err
 	}
 	defer resp.Body.Close()
 
-	result, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return ioutil.ReadAll(resp.Body)
 }
