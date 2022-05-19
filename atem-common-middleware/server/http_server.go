@@ -1,18 +1,18 @@
 package server
 
 import (
-	"fmt"
+	"context"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
 	"time"
 
-	"github.com/socloudng/atem-common/configs"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
-func NewHttpServer(servCfg *configs.ServerConfig, httpHandler http.Handler, logger *zap.Logger) {
-	addr := strconv.Itoa(servCfg.ServerPort)
+func NewHttpServer(servCfg *ServerConfig, httpHandler http.Handler, logger *zap.Logger) {
+	addr := ":" + strconv.Itoa(servCfg.ServerPort)
 	serv := &http.Server{
 		Addr:           addr,
 		Handler:        httpHandler,
@@ -22,9 +22,36 @@ func NewHttpServer(servCfg *configs.ServerConfig, httpHandler http.Handler, logg
 	}
 	// 保证文本顺序输出
 	time.Sleep(10 * time.Microsecond)
-	logger.Info("server run success on ", zapcore.Field{Key: "address", String: addr})
-	fmt.Println("Welcom to " + servCfg.ServerName)
-	logger.Error(serv.ListenAndServe().Error())
+	logger.Info("\nserver run success on " + addr)
+	idleConnsClosed := make(chan struct{})
+
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+
+		// We received an interrupt signal, shut down.
+		if err := serv.Shutdown(context.Background()); err != nil {
+			// Error from closing listeners, or context timeout.
+			logger.Error("HTTP server Shutdown: %v", zap.Error(err))
+		}
+
+		logger.Info("HTTP server Shutdown!")
+		close(idleConnsClosed)
+	}()
+
+	if servCfg.HttpsEnabled {
+		certPath, keyPath := servCfg.HttpsCertPath, servCfg.HttpsKeyPath
+		if err := serv.ListenAndServeTLS(certPath, keyPath); err != http.ErrServerClosed {
+			logger.Error("HTTPS server ListenAndServe: %v", zap.Error(err))
+		}
+	} else {
+		if err := serv.ListenAndServe(); err != http.ErrServerClosed {
+			logger.Error("HTTP server ListenAndServe: %v", zap.Error(err))
+		}
+	}
+
+	<-idleConnsClosed
 }
 
 // EnableCrossDomain sets the `Access-Control-Allow-Methods` header and the

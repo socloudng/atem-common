@@ -2,8 +2,6 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/socloudng/atem-common/configs"
-	"go.uber.org/zap"
 )
 
 const (
@@ -12,10 +10,14 @@ const (
 	DefaultEnvironmentRelease = "prod"
 )
 
-func NewGinEngine(cfg *configs.ServerConfig, logger *zap.Logger) *gin.Engine {
-	initGinMode(cfg.Env)
+func NewGinEngine(profile string) *gin.Engine {
+	initGinMode(profile)
 	r := gin.Default()
-	r.GET("/", showCopyRight)
+	r.GET("/copyRight", func(c *gin.Context) {
+		cr := "Copyright © 2021-2025 By songzb. All rights reserved."
+		c.Writer.WriteString(cr)
+		c.Done()
+	})
 	return r
 }
 
@@ -34,10 +36,4 @@ func initGinMode(profile string) {
 			gin.SetMode(gin.ReleaseMode)
 		}
 	}
-}
-
-func showCopyRight(c *gin.Context) {
-	cr := "Copyright © 2021-2025 By songzb. All rights reserved."
-	c.Writer.WriteString(cr)
-	c.Done()
 }

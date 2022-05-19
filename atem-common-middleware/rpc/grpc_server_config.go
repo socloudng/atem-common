@@ -2,10 +2,10 @@ package rpc
 
 import (
 	"github.com/socloudng/atem-common/atem-common-middleware/getcdv3"
-	"github.com/socloudng/atem-common/configs"
+	"github.com/socloudng/atem-common/atem-common-middleware/server"
 )
 
 type GrpcServerConfig struct {
-	configs.ServerConfig `mapstructure:"server" yaml:"server"`
-	getcdv3.EtcdConfig   `mapstructure:"etcd" yaml:"etcd"`
+	server.ServerConfig `mapstructure:"server" yaml:"server"`
+	getcdv3.EtcdConfig  `mapstructure:"etcd" yaml:"etcd"`
 }
