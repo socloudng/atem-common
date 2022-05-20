@@ -74,8 +74,8 @@ func (c *MinioOssClient) UploadObject(
 }
 
 func (c *MinioOssClient) FPutObject(
-	bucketName, objectName, filePath,
-	contentType string) (info minio.UploadInfo, err error) {
+	bucketName, objectName, contentType,
+	filePath string) (info minio.UploadInfo, err error) {
 	ctx := context.Background()
 	cli := c.GetClient()
 	if cli != nil {

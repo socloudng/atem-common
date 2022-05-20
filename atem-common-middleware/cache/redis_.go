@@ -8,6 +8,9 @@ import (
 )
 
 func Redis(cfg *RedisConfig, logger *zap.Logger) (*redis.Client, error) {
+	if cfg == nil {
+		return nil, nil
+	}
 	client := redis.NewClient(&redis.Options{
 		Addr:     cfg.Addr,
 		Password: cfg.Pass, // no password set

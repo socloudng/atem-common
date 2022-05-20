@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -40,4 +41,32 @@ func Post(url string, data interface{}, contentType string) (content []byte, err
 	defer resp.Body.Close()
 
 	return ioutil.ReadAll(resp.Body)
+}
+
+// 下载图片信息
+func DownLoad(savePath string, url string) (string, error) {
+	saveName := savePath
+	idx := strings.LastIndex(url, "/")
+	if idx < 0 {
+		saveName += "/" + url
+	} else {
+		saveName += url[idx:]
+	}
+	v, err := http.Get(url)
+	if err != nil {
+		fmt.Printf("Http get [%v] failed! %v", url, err)
+		return "", err
+	}
+	defer v.Body.Close()
+	content, err := ioutil.ReadAll(v.Body)
+	if err != nil {
+		fmt.Printf("Read http response failed! %v", err)
+		return "", err
+	}
+	err = ioutil.WriteFile(saveName, content, 0666)
+	if err != nil {
+		fmt.Printf("Save to file failed! %v", err)
+		return "", err
+	}
+	return saveName, nil
 }
