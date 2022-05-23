@@ -1,4 +1,4 @@
-package cors
+package ginhelp
 
 import (
 	"github.com/gin-gonic/contrib/cors"

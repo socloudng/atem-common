@@ -1,4 +1,4 @@
-package server
+package ginhelp
 
 import (
 	"github.com/gin-gonic/gin"
@@ -17,6 +17,11 @@ func NewGinEngine(profile string) *gin.Engine {
 		cr := "Copyright © 2021-2025 By songzb. All rights reserved."
 		c.Writer.WriteString(cr)
 		c.Done()
+	})
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
 	})
 	return r
 }
