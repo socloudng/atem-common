@@ -8,10 +8,10 @@ import (
 )
 
 type BASE_MODEL[T uint | uint64 | int | int64 | uuid.UUID] struct {
-	ID        T              `json:"id,string" form:"id" gorm:"primarykey"`            // 主键ID
-	CreatedAt *time.Time     `json:"createTime" form:"createTime" gorm:"comment:创建时间"` // 创建时间
-	UpdatedAt *time.Time     `json:"updateTime" form:"createTime" gorm:"comment:更新时间"` // 更新时间
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`                                   // 删除时间
+	ID        T              `json:"id,string" form:"id" gorm:"primarykey"`                      // 主键ID
+	CreatedAt *time.Time     `json:"createTime,omitempty" form:"createTime" gorm:"comment:创建时间"` // 创建时间
+	UpdatedAt *time.Time     `json:"updateTime,omitempty" form:"updateTime" gorm:"comment:更新时间"` // 更新时间
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`                                             // 删除时间
 }
 
 /// 审计model
