@@ -44,7 +44,7 @@ func Post(url string, data interface{}, contentType string) (content []byte, err
 }
 
 // 下载图片信息
-func DownLoad(savePath string, url string) (string, error) {
+func DownLoad(savePath string, url string, withContent bool) (string, []byte, error) {
 	saveName := savePath
 	idx := strings.LastIndex(url, "/")
 	if idx < 0 {
@@ -55,18 +55,22 @@ func DownLoad(savePath string, url string) (string, error) {
 	v, err := http.Get(url)
 	if err != nil {
 		fmt.Printf("Http get [%v] failed! %v", url, err)
-		return "", err
+		return "", nil, err
 	}
 	defer v.Body.Close()
 	content, err := ioutil.ReadAll(v.Body)
 	if err != nil {
 		fmt.Printf("Read http response failed! %v", err)
-		return "", err
+		return "", nil, err
 	}
 	err = ioutil.WriteFile(saveName, content, 0666)
 	if err != nil {
 		fmt.Printf("Save to file failed! %v", err)
-		return "", err
+		return "", nil, err
 	}
-	return saveName, nil
+	if withContent {
+		return saveName, content, nil
+	} else {
+		return saveName, nil, nil
+	}
 }
