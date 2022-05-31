@@ -14,9 +14,10 @@ type PageResult struct {
 }
 
 type Response struct {
-	Code int         `json:"code"`
-	Data interface{} `json:"data"`
-	Msg  string      `json:"msg"`
+	Code    int         `json:"code"`
+	Data    interface{} `json:"data"`
+	Msg     string      `json:"msg"`
+	Success int         `json:"success,omitempty"`
 }
 
 const (
@@ -30,6 +31,7 @@ func Result(code int, data interface{}, msg string, c *gin.Context) {
 		code,
 		data,
 		msg,
+		SUCCESS,
 	})
 }
 
